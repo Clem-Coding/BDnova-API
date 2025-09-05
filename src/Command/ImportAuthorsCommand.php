@@ -56,14 +56,41 @@ class ImportAuthorsCommand extends Command
                 $author = new Author();
                 $author->setFirstName($firstName);
                 $author->setLastName($lastName);
-                $author->setBiography('');
+
+                // --- Biography via Wikipedia ---
+
+                // Exceptions : 
+                if ($firstName === 'Jul' && $lastName === 'Maroh') {
+                    $firstName = "Jul'";
+                }
+
+                $formattedName = $firstName . ' ' . $lastName;
+                $wikiApiUrl = 'https://fr.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=&explaintext=&titles=' . urlencode($formattedName) . '&format=json';
+
+                $options = [
+                    "http" => [
+                        "header" => "User-Agent: BDnova/1.0\r\n"
+                    ]
+                ];
+
+                $context = stream_context_create($options);
+                $json = file_get_contents($wikiApiUrl, false, $context);
+
+                $wikiData = json_decode($json, true);
+                $page = reset($wikiData['query']['pages']);
+                $extract = $page['extract'] ?? '';
+                $author->setBiography($extract);
+
                 $author->setPhotUrl('');
                 $author->setCreatedAt(new \DateTimeImmutable());
                 $this->entityManager->persist($author);
 
                 $io->text("Auteur: $firstName $lastName");
+                $io->text("Biography: $extract");
 
-                // Loop through all URL columns
+                // --- Social links --- 
+
+                //Loop through all URL columns in csv
                 for ($i = 2; $i < count($data); $i++) {
                     $url = trim($data[$i]);
                     if ($url !== '') {
@@ -77,9 +104,12 @@ class ImportAuthorsCommand extends Command
                         $io->text("  → $url ($type)");
                     }
                 }
+
                 $count++;
                 $io->newLine();
             }
+
+
             fclose($handle);
             $this->entityManager->flush();
         }
