@@ -4,8 +4,10 @@ namespace App\Entity;
 
 use App\Repository\AuthorLinksRepository;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiResource as MetadataApiResource;
 
 #[ORM\Entity(repositoryClass: AuthorLinksRepository::class)]
+#[MetadataApiResource()]
 class AuthorLinks
 {
     #[ORM\Id]
