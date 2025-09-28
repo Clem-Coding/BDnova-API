@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource as MetadataApiResource;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Table(name: "authors")]
 #[ORM\Entity(repositoryClass: AuthorRepository::class)]
@@ -20,21 +21,28 @@ class Author
     private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $firstName = null;
 
+    #[Assert\Length(max: 255)]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $pseudonym = null;
 
+    #[Assert\NotBlank(message: "La biographie ne doit pas être vide.")]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $biography = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Length(max: 255)]
+    #[Assert\Url(message: "L'URL de la photo n'est pas valide.")]
     private ?string $photUrl = null;
 
     #[ORM\Column]
+    #[Assert\NotNull(message: "La date de création ne doit pas être vide.")]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
