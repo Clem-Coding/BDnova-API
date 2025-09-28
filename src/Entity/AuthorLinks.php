@@ -6,7 +6,16 @@ use App\Repository\AuthorLinksRepository;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource as MetadataApiResource;
 use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Metadata\ApiFilter;
 
+#[ApiFilter(SearchFilter::class, properties: [
+    'type' => 'partial',
+    'url' => 'partial',
+    'author.id' => 'exact',
+])]
+#[ApiFilter(OrderFilter::class, properties: ['createdAt', 'updatedAt'])]
 #[ORM\Entity(repositoryClass: AuthorLinksRepository::class)]
 #[MetadataApiResource()]
 class AuthorLinks

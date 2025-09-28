@@ -9,7 +9,18 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource as MetadataApiResource;
 use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Metadata\ApiFilter;
 
+#[ApiFilter(SearchFilter::class, properties: [
+    'firstName' => 'partial',
+    'lastName' => 'partial',
+    'pseudonym' => 'partial',
+])]
+#[ApiFilter(DateFilter::class, properties: ['createdAt'])]
+#[ApiFilter(OrderFilter::class, properties: ['lastName', 'createdAt', 'updatedAt'])]
 #[ORM\Table(name: "authors")]
 #[ORM\Entity(repositoryClass: AuthorRepository::class)]
 #[MetadataApiResource()]
